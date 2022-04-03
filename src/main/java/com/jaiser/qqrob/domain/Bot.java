@@ -1,22 +1,25 @@
-package com.jaiser.qqrob.utils;
+package com.jaiser.qqrob.domain;
 
-import jdk.nashorn.internal.ir.IfNode;
-import love.forte.simbot.Bot;
 import love.forte.simbot.BotManager;
 import love.forte.simbot.OriginBotManager;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 /**
- * 机器对象工具
+ * 机器人对象
  *
  * @author Jaiser on 2022/4/3
  */
-public class BotUtil {
+public class Bot {
 
-    private static Bot bot = null;
+    private static love.forte.simbot.Bot bot = null;
 
-    public Bot INSTANCE() {
+    /**
+     * 懒汉加载，唯一单例对象
+     * @return
+     */
+    public static love.forte.simbot.Bot INSTANCE() {
         if (bot == null) {
             OriginBotManager manager = OriginBotManager.INSTANCE;
             for(BotManager<?> it : manager) {

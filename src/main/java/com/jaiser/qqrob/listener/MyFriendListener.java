@@ -1,9 +1,13 @@
 package com.jaiser.qqrob.listener;
 
+import com.jaiser.qqrob.constant.RobConstant;
+import com.jaiser.qqrob.domain.Bot;
+import com.jaiser.qqrob.enums.ManagerOperateEnum;
 import love.forte.di.annotation.Beans;
 import love.forte.simboot.annotation.ContentTrim;
 import love.forte.simboot.annotation.Filter;
 import love.forte.simboot.annotation.Listener;
+import love.forte.simboot.filter.MatchType;
 import love.forte.simbot.Identifies;
 import love.forte.simbot.PriorityConstant;
 import love.forte.simbot.action.ReplySupport;
@@ -11,8 +15,19 @@ import love.forte.simbot.definition.Friend;
 import love.forte.simbot.event.ContinuousSessionContext;
 import love.forte.simbot.event.EventResult;
 import love.forte.simbot.event.FriendMessageEvent;
+import love.forte.simbot.message.Message;
+import love.forte.simbot.message.Messages;
+import love.forte.simbot.message.Text;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.jaiser.qqrob.enums.ManagerOperateEnum.*;
 
 /**
  * 好友相关事件监听器。
@@ -23,7 +38,6 @@ import org.slf4j.LoggerFactory;
 public class MyFriendListener {
 
     private static final Logger logger = LoggerFactory.getLogger("好友消息");
-
     /**
      * 监听好友消息，并且回复这个好友一句"是的"。
      *
@@ -31,86 +45,127 @@ public class MyFriendListener {
      */
     @Listener
     public void friendListen(FriendMessageEvent event) {
-        final Friend friend = event.getFriend();
-        logger.info("friend: {}({})", friend.getUsername(), friend.getId());
-        logger.info("message: {}", event.getMessageContent().getPlainText());
+        if (RobConstant.INSTANCE().isFriendEnable()) {
+            Friend friend = event.getFriend();
+//        logger.info("friend: {}({})", friend.getUsername(), friend.getId());
+//        logger.info("message: {}", event.getMessageContent().getPlainText());
+            // 如果是自己(管理员)的消息，则不回复
+            if (RobConstant.INSTANCE().isManager(String.valueOf(friend.getId()))) {
+                return;
+            }
+            if (event instanceof ReplySupport) {
+                ((ReplySupport) event).replyBlocking("是的");
+            } else {
+                friend.sendBlocking("是的");
+            }
+        }
         // 回复消息你可以：
         // 1. 先判断 event 事件对象是否允许"回复"，在允许的情况使用"reply(reply)", 不允许则通过获取好友来直接发送消息。
         // 2. 直接获取好友发送消息，不通过事件回复。
         // 下面的示例选择方案1
-//        if (event instanceof ReplySupport) {
-//            ((ReplySupport) event).replyBlocking("是的");
-//        } else {
-//            friend.sendBlocking("是的");
-//        }
+
 
     }
 
-    /**
-     * 如果好友发送的消息是"你好"，那么回复一句"你也好"
-     */
-//    @Filter("你好")
-//    @ContentTrim // 将filter所需的匹配内容进行 trim 操作。
-//    @Listener
-//    public void friendListen2(FriendMessageEvent event, ContinuousSessionContext sessionContext) {
-//        // 这里将会直接通过好友对象进行消息发送
-//        event.getFriend().sendBlocking("你也好");
-//
-//    }
+    @Filter(value = "管理", matchType = MatchType.TEXT_CONTAINS)
+    @ContentTrim // 将filter所需的匹配内容进行 trim 操作。
+    @Listener(priority = PriorityConstant.PRIORITIZED_1)
+    public void friendListen2(FriendMessageEvent event, ContinuousSessionContext sessionContext) {
+        Friend friend = event.getFriend();
+        String value = null;
+        // 如果是自己(管理员)的消息则进行操作
+        if (RobConstant.INSTANCE().isManager(friend.getId().toString())) {
+            List<Message.Element<?>> messageList = new ArrayList<>();
+            for (ManagerOperateEnum managerOperateEnum : ManagerOperateEnum.values()) {
+                messageList.add(Text.of(managerOperateEnum.getValue() + "." + managerOperateEnum.getDesc()));
+                if (!"0".equals(managerOperateEnum.getValue())) {
+                    messageList.add(Text.of("\n"));
+                }
+            }
+            while (!"0".equals(value)) {
+                Messages messagesOfList = Messages.listToMessages(messageList);
+                friend.sendBlocking(messagesOfList);
+
+                try {
+                    value = sessionContext.waitingForOnMessage(
+                            Identifies.randomID(),
+                            30_000L,
+                            event,
+                            (sessionEvent, context, provider) -> {
+                                // 得到下一个事件中的文本消息
+                                final String plainText = sessionEvent.getMessageContent().getPlainText();
+
+                                // 推送此文本
+                                provider.push(plainText);
+                            });
+                } catch (Exception e) {
+                    logger.error("操作异常", e);
+                    friend.sendBlocking("操作超时，退出操作");
+                    break;
+                }
+                if (StringUtils.isNotBlank(value) && !OPERATE_EXIT.getValue().equals(value)) {
+                    if (managerOperate(value)) {
+                        // 查看所有操作状态
+                        if (OPERATE_STATE.getValue().equals(value)) {
+                            friend.sendBlocking(getAllOperateState());
+                        }else {
+                            friend.sendBlocking(ManagerOperateEnum.getEnumByValue(value).getDesc() + "成功，请继续操作：");
+                        }
+                    } else {
+                        friend.sendBlocking("操作异常，退出操作，请联系管理员查看！");
+                    }
+                }else {
+                    friend.sendBlocking("退出操作成功");
+                    break;
+                }
+            }
+        }
+    }
 
     /**
-     * 此过滤器模拟一个 持续会话 的场景，场景如下：
-     * <p>
-     * 用户发送：绑定
-     * <p>
-     * bot回复：请输入账号
-     * <p>
-     * 用户下一句回复一个账号，bot回复：绑定成功：账号为：xxx
-     * <p>
-     * Tips:
-     * <ul>
-     *     <li>
-     *         此监听函数最好设置为 @Listener(async = true) (异步执行的), 因为一个存在持续会话的监听函数可能会持续较长时间。
-     *         此时如果此监听函数后续还有其他事件，那么就会影响到他们的执行。
-     *     </li>
-     *     <li>
-     *         但是相对的，假如在你的预期内，此事件应该被执行一次，且直接阻止后续事件的执行，那么就不要使用异步执行，
-     *         而是在执行完成后直接截断后续监听。
-     *     </li>
-     * </ul>
+     * 管理员操作。
      *
-     * @param event          事件本体
-     * @param sessionContext 持续会话上下文
+     * @param value 事件对象
      */
-//    @Filter("绑定")
-//    @Listener(priority = PriorityConstant.PRIORITIZED_1) // 使用较高的优先级。
-//    public EventResult friendListen3(FriendMessageEvent event, ContinuousSessionContext sessionContext) throws InterruptedException {
-//        // 给出提示
-//        final Friend friend = event.getFriend();
-//        friend.sendBlocking("请输入账号");
-//
-//        // 通过持续会话上下文等待此好友的下一个消息
-//        final String value = sessionContext.waitingForOnMessage(
-////                Identifies.ID("abc"),
-//                 Identifies.randomID(),  // 会话ID, 默认随机.
-//                30_000L,                // 超时时间，单位毫秒，超时后此会话将会被关闭. 默认为0, 即永不超时. 不建议使用默认
-//                event,                  // 一个消息事件
-//                (sessionEvent, context, provider) -> {
-//                    // 得到下一个事件中的文本消息
-//                     final String plainText = sessionEvent.getMessageContent().getPlainText();
-//
-//                    // 推送此文本
-//                     provider.push(plainText);
-//                });
-//
-//        String message;
-//        message = "绑定成功！账号为: " + value;
-//
-//        friend.sendBlocking(message);
-//
-//
-//        // 返回 EventResult的truncate，以代表截断后续的事件执行，整个事件流程将会自此结束。
-//        return EventResult.truncate();
-//    }
+    private Boolean managerOperate(String value) {
+        switch (value) {
+            case "0":
+                // 退出操作
+                return true;
+            case "1":
+                // 查看所有操作状态
+                return true;
+            case "2":
+                // 开启监听好友功能
+                RobConstant.INSTANCE().setFriendEnable(true);
+                return true;
+            case "3":
+                // 关闭监听好友功能
+                RobConstant.INSTANCE().setFriendEnable(false);
+                return true;
+            case "4":
+                // 开启监听群组功能
+                RobConstant.INSTANCE().setGroupEnable(true);
+                return true;
+            case "5":
+                // 关闭监听群组功能
+                RobConstant.INSTANCE().setGroupEnable(false);
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 获取所有操作状态
+     */
+    private String getAllOperateState() {
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("监听好友功能：").append(RobConstant.INSTANCE().isFriendEnable() ? "开启" : "关闭").append("\n");
+        sb.append("监听群组功能：").append(RobConstant.INSTANCE().isGroupEnable() ? "开启" : "关闭");
+        return sb.toString();
+    }
 
 }

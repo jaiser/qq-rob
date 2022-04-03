@@ -1,5 +1,6 @@
 package com.jaiser.qqrob.listener;
 
+import com.jaiser.qqrob.constant.RobConstant;
 import love.forte.di.annotation.Beans;
 import love.forte.simboot.annotation.Listener;
 import love.forte.simbot.component.mirai.event.MiraiGroupMessageEvent;
@@ -32,11 +33,13 @@ public class MyGroupListener {
      */
     @Listener
     public void myGroupListen(MiraiGroupMessageEvent event) {
+
         // 事件发生的群
         final String groupName = event.getGroup().getName();
         final String authorName = event.getAuthor().getUsername();
 
         final MiraiReceivedMessageContent messageContent = event.getMessageContent();
+
         // nativeMessageChain是mirai中的原生事件对象
         // 只有在使用mirai组件下的特殊事件类型的时候才会有
         final MessageChain nativeMessageChain = messageContent.getNativeMessageChain();
@@ -48,6 +51,11 @@ public class MyGroupListener {
         // 这里直接展示mirai的原生消息对象
         logger.warn("「{}」在「{}」里发送了消息：{}", authorName, groupName, nativeMessageChain);
     }
+
+
+
+
+
 
     /*
     List<Message.Element<?>> messageList = new ArrayList<>(3);
