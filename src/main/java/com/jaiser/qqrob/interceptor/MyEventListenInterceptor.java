@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * 事件监听拦截器
@@ -20,12 +21,15 @@ public class MyEventListenInterceptor implements BlockingEventListenerIntercepto
 
     private static final Logger logger = LoggerFactory.getLogger("事件监听拦截器");
 
+    @Autowired
+    private RobConstant robConstant;
+
     @NotNull
     @Override
     public EventResult doIntercept(@NotNull Context context) {
 
         if (context.getListener().isTarget(MiraiGroupMessageEvent.Key)) {
-            if (!RobConstant.INSTANCE().isGroupEnable()) {
+            if (!robConstant.isGroupEnable()) {
                 return EventResult.Invalid.INSTANCE;
             }
         }

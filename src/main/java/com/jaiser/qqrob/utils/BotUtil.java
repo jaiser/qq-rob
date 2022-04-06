@@ -1,5 +1,6 @@
-package com.jaiser.qqrob.domain;
+package com.jaiser.qqrob.utils;
 
+import love.forte.simbot.Bot;
 import love.forte.simbot.BotManager;
 import love.forte.simbot.OriginBotManager;
 import org.springframework.stereotype.Component;
@@ -11,19 +12,19 @@ import java.util.stream.Collectors;
  *
  * @author Jaiser on 2022/4/3
  */
-public class Bot {
+@Component
+public class BotUtil {
 
-    private static love.forte.simbot.Bot bot = null;
+    private Bot bot = null;
 
     /**
-     * 懒汉加载，唯一单例对象
+     * 获取机器人对象
      * @return
      */
-    public static love.forte.simbot.Bot INSTANCE() {
+    public Bot INSTANCE() {
         if (bot == null) {
             OriginBotManager manager = OriginBotManager.INSTANCE;
             for(BotManager<?> it : manager) {
-                System.out.println("BotManager: " + it);
                 bot = it.all().collect(Collectors.toList()).get(0);
             }
         }

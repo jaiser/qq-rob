@@ -1,12 +1,6 @@
 package com.jaiser.qqrob;
 
-import com.jaiser.qqrob.constant.RobConstant;
-import com.jaiser.qqrob.domain.Bot;
-import love.forte.simboot.SimbootApp;
-import love.forte.simboot.SimbootApplicationException;
-import love.forte.simboot.SimbootContext;
-import love.forte.simboot.core.SimbootApplication;
-import love.forte.simbot.Identifies;
+import love.forte.simboot.autoconfigure.EnableSimbot;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,30 +8,27 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import javax.annotation.PostConstruct;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author jaiser
  */
 @EnableScheduling
 @SpringBootApplication
-@SimbootApplication
+@EnableSimbot
 @MapperScan(basePackages = "com.jaiser.qqrob.mapper") //扫描所有的mapper接口并创建代理类
 public class QqRobApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(QqRobApplication.class);
 
     public static void main(String[] args) {
+//        try {
+////            final SimbootContext context = SimbootApp.run(QqRobApplication.class, args);
+////            context.joinBlocking();
+//        } catch (SimbootApplicationException e) {
+//            e.printStackTrace();
+//        }
         SpringApplication.run(QqRobApplication.class, args);
+
         startSuccess();
-        try {
-            final SimbootContext context = SimbootApp.run(QqRobApplication.class, args);
-            context.joinBlocking();
-        } catch (SimbootApplicationException e) {
-            e.printStackTrace();
-        }
     }
 
     /**

@@ -15,23 +15,33 @@
     <description>qq-rob</description>
     <properties>
         <java.version>1.8</java.version>
-        <simbot.version>3.0.0.preview.2.0</simbot.version>
+        <simbot.version>3.0.0.preview.3.0</simbot.version>
         <simbot-mirai.sub.version>292.0.1</simbot-mirai.sub.version>
         <simbot-mirai.version>${simbot.version}-${simbot-mirai.sub.version}</simbot-mirai.version>
+        <simbot-component-mirai.version>${simbot.version}-2100.0.1</simbot-component-mirai.version>
         <log4j2.version>2.17.0</log4j2.version>
     </properties>
     <dependencies>
 <!--    qq simbot依赖    -->
+        <!-- simbot-spring-boot-starter 库 -->
         <dependency>
             <groupId>love.forte.simbot.boot</groupId>
-            <artifactId>simboot-core</artifactId>
+            <artifactId>simboot-core-spring-boot-starter</artifactId>
             <version>${simbot.version}</version>
         </dependency>
         <dependency>
             <groupId>love.forte.simbot.component</groupId>
             <artifactId>simbot-component-mirai-boot</artifactId>
-            <version>${simbot-mirai.version}</version>
+            <version>${simbot-component-mirai.version}</version>
         </dependency>
+
+        <!--   jasypt加密     -->
+        <dependency>
+            <groupId>org.jasypt</groupId>
+            <artifactId>jasypt</artifactId>
+            <version>1.9.3</version>
+        </dependency>
+
 <!--    日志依赖    -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

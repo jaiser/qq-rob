@@ -1,5 +1,8 @@
 package com.jaiser.qqrob.constant;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.util.Objects;
 
 /**
@@ -7,25 +10,27 @@ import java.util.Objects;
  *
  * @author Jaiser on 2022/4/3
  */
+@Component
 public class RobConstant {
 
-    private static RobConstant robConstant = new RobConstant();
-
-    /**
-     * 单例获取
-     * @return
-     */
-    public static RobConstant INSTANCE() {
-        if (robConstant == null) {
-            robConstant = new RobConstant();
-        }
-        return robConstant;
-    }
+//    private static RobConstant robConstant = new RobConstant();
+//
+//    /**
+//     * 单例获取
+//     * @return
+//     */
+//    public static RobConstant INSTANCE() {
+//        if (robConstant == null) {
+//            robConstant = new RobConstant();
+//        }
+//        return robConstant;
+//    }
 
     // 默认管理员账号
-    private String manager = "1007923707";
-    // 默认群组不开启监听
-    private Boolean groupEnable = false;
+    @Value("${rob.manager}")
+    private String manager;
+    // 默认群组开启监听
+    private Boolean groupEnable = true;
     // 默认私聊不开启监听
     private Boolean friendEnable = false;
 

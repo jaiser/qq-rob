@@ -1,7 +1,6 @@
 package com.jaiser.qqrob.listener;
 
 import com.jaiser.qqrob.constant.RobConstant;
-import com.jaiser.qqrob.domain.Bot;
 import com.jaiser.qqrob.enums.ManagerOperateEnum;
 import love.forte.di.annotation.Beans;
 import love.forte.simboot.annotation.ContentTrim;
@@ -13,7 +12,6 @@ import love.forte.simbot.PriorityConstant;
 import love.forte.simbot.action.ReplySupport;
 import love.forte.simbot.definition.Friend;
 import love.forte.simbot.event.ContinuousSessionContext;
-import love.forte.simbot.event.EventResult;
 import love.forte.simbot.event.FriendMessageEvent;
 import love.forte.simbot.message.Message;
 import love.forte.simbot.message.Messages;
@@ -23,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +35,9 @@ import static com.jaiser.qqrob.enums.ManagerOperateEnum.*;
 public class MyFriendListener {
 
     private static final Logger logger = LoggerFactory.getLogger("好友消息");
+
+    @Autowired
+    private RobConstant robConstant;
     /**
      * 监听好友消息，并且回复这个好友一句"是的"。
      *
@@ -45,12 +45,12 @@ public class MyFriendListener {
      */
     @Listener
     public void friendListen(FriendMessageEvent event) {
-        if (RobConstant.INSTANCE().isFriendEnable()) {
+        if (robConstant.isFriendEnable()) {
             Friend friend = event.getFriend();
 //        logger.info("friend: {}({})", friend.getUsername(), friend.getId());
 //        logger.info("message: {}", event.getMessageContent().getPlainText());
             // 如果是自己(管理员)的消息，则不回复
-            if (RobConstant.INSTANCE().isManager(String.valueOf(friend.getId()))) {
+            if (robConstant.isManager(String.valueOf(friend.getId()))) {
                 return;
             }
             if (event instanceof ReplySupport) {
@@ -59,22 +59,16 @@ public class MyFriendListener {
                 friend.sendBlocking("是的");
             }
         }
-        // 回复消息你可以：
-        // 1. 先判断 event 事件对象是否允许"回复"，在允许的情况使用"reply(reply)", 不允许则通过获取好友来直接发送消息。
-        // 2. 直接获取好友发送消息，不通过事件回复。
-        // 下面的示例选择方案1
-
-
     }
 
     @Filter(value = "管理", matchType = MatchType.TEXT_CONTAINS)
     @ContentTrim // 将filter所需的匹配内容进行 trim 操作。
     @Listener(priority = PriorityConstant.PRIORITIZED_1)
-    public void friendListen2(FriendMessageEvent event, ContinuousSessionContext sessionContext) {
+    public void managerListen(FriendMessageEvent event, ContinuousSessionContext sessionContext) {
         Friend friend = event.getFriend();
         String value = null;
         // 如果是自己(管理员)的消息则进行操作
-        if (RobConstant.INSTANCE().isManager(friend.getId().toString())) {
+        if (robConstant.isManager(friend.getId().toString())) {
             List<Message.Element<?>> messageList = new ArrayList<>();
             for (ManagerOperateEnum managerOperateEnum : ManagerOperateEnum.values()) {
                 messageList.add(Text.of(managerOperateEnum.getValue() + "." + managerOperateEnum.getDesc()));
@@ -137,19 +131,19 @@ public class MyFriendListener {
                 return true;
             case "2":
                 // 开启监听好友功能
-                RobConstant.INSTANCE().setFriendEnable(true);
+                robConstant.setFriendEnable(true);
                 return true;
             case "3":
                 // 关闭监听好友功能
-                RobConstant.INSTANCE().setFriendEnable(false);
+                robConstant.setFriendEnable(false);
                 return true;
             case "4":
                 // 开启监听群组功能
-                RobConstant.INSTANCE().setGroupEnable(true);
+                robConstant.setGroupEnable(true);
                 return true;
             case "5":
                 // 关闭监听群组功能
-                RobConstant.INSTANCE().setGroupEnable(false);
+                robConstant.setGroupEnable(false);
                 return true;
 
             default:
@@ -163,8 +157,8 @@ public class MyFriendListener {
     private String getAllOperateState() {
 
         StringBuffer sb = new StringBuffer();
-        sb.append("监听好友功能：").append(RobConstant.INSTANCE().isFriendEnable() ? "开启" : "关闭").append("\n");
-        sb.append("监听群组功能：").append(RobConstant.INSTANCE().isGroupEnable() ? "开启" : "关闭");
+        sb.append("监听好友功能：").append(robConstant.isFriendEnable() ? "开启" : "关闭").append("\n");
+        sb.append("监听群组功能：").append(robConstant.isGroupEnable() ? "开启" : "关闭");
         return sb.toString();
     }
 
