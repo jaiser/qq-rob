@@ -41,7 +41,7 @@ spring:
     database: 1
     host: ${redis_ip}
     port: ${redis_port}
-    password: ${redis_password} #'Redis#0207'
+    password: ${redis_password}
     timeout: 5000  #
     jedis:
       pool:
