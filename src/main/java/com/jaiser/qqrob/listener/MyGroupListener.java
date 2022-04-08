@@ -41,7 +41,6 @@ public class MyGroupListener {
      * @param event 事件本体
      */
     @Listener
-    @Filter(value = ".", matchType = MatchType.TEXT_STARTS_WITH)
     public void myGroupListen(MiraiGroupMessageEvent event) {
         // 事件发生的群
         final String groupName = event.getGroup().getName();

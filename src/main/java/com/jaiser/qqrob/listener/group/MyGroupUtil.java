@@ -128,10 +128,10 @@ public class MyGroupUtil {
         Messages messages = null;
         //发言人信息
         logger.info("学习对象key：《{}》，回复key：《{}》", msgList[0], msgList[1]);
-        if (!msgList[1].startsWith(".")) {
-            messages = Messages.getMessages(new At(Identifies.ID(String.valueOf(event.getAuthor().getId()))), Text.of("学习key必须要用.开头！"));
-
-        }   else {
+//        if (!msgList[1].startsWith(".")) {
+//            messages = Messages.getMessages(new At(Identifies.ID(String.valueOf(event.getAuthor().getId()))), Text.of("学习key必须要用.开头！"));
+//
+//        }   else {
             AutoReplyD autoReplyD = autoReplyService.selectOneByKey(msgList[1]);
             if (autoReplyD != null) {
                 messages = Messages.getMessages(new At(Identifies.ID(String.valueOf(event.getAuthor().getId()))), Text.of("已经存在回复，请更新或查询！"));
@@ -151,7 +151,7 @@ public class MyGroupUtil {
                 } else {
                     messages = Messages.getMessages(new At(Identifies.ID(String.valueOf(event.getAuthor().getId()))), Text.of("学习失败，请联系管理员！"));
                 }
-            }
+//            }
         }
         event.sendBlocking(messages);
     }
@@ -249,5 +249,13 @@ public class MyGroupUtil {
             messages = Messages.getMessages(Text.of(value));
         }
         event.sendBlocking(messages);
+    }
+
+    /**
+     * 清空所有缓存， 所有缓存都在这里进行统一清空
+     */
+    public void clearAllCache(){
+        //清空回复缓存
+        autoReplyService.clearReplyCache();
     }
 }

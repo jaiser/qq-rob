@@ -38,4 +38,9 @@ public interface AutoReplyService {
      * @return
      */
     public List<AutoReplyD> listReplyInfo(AutoReplyD autoReplyD);
+
+    /**
+     * 清除缓存
+     */
+    public void clearReplyCache();
 }

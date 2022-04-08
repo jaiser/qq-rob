@@ -10,6 +10,8 @@ import love.forte.di.annotation.Depend;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,7 @@ public class AutoReplyServiceImpl implements AutoReplyService {
     private AutoReplyMapper autoReplyMapper;
 
     @Override
+    @Cacheable(cacheNames = "CACHE_SELECT_REPLY", key = "#chatKey")
     public AutoReplyD selectOneByKey(String chatKey) {
         if (StringUtils.checkValNull(chatKey)) {
             logger.error("回复key为空，无法查询回复信息,查询对象为：《chatKey:{}》", chatKey);
@@ -43,18 +46,21 @@ public class AutoReplyServiceImpl implements AutoReplyService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "CACHE_SELECT_REPLY", allEntries = true)
     public Boolean updateInfo(AutoReplyD autoReplyD) {
         autoReplyD.setUpdateTime(dateFormat.format(new Date()));
         return autoReplyMapper.updateById(autoReplyD) > 0;
     }
 
     @Override
+    @CacheEvict(cacheNames = "CACHE_SELECT_REPLY", allEntries = true)
     public Boolean saveInfo(AutoReplyD autoReplyD) {
         autoReplyD.setInsertTime(dateFormat.format(new Date()));
         return autoReplyMapper.insert(autoReplyD) > 0;
     }
 
     @Override
+    @Cacheable(cacheNames = "CACHE_SELECT_REPLY")
     public List<AutoReplyD> listReplyInfo(AutoReplyD autoReplyD) {
         EntityWrapper<AutoReplyD> wrapper = new EntityWrapper<>();
 //        if (autoReplyD != null ) {
@@ -63,6 +69,12 @@ public class AutoReplyServiceImpl implements AutoReplyService {
 //            }
 //        }
         return autoReplyMapper.selectList(wrapper);
+    }
+
+    @Override
+    @CacheEvict(cacheNames = "CACHE_SELECT_REPLY", allEntries = true)
+    public void clearReplyCache() {
+
     }
 
 }

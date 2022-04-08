@@ -5,12 +5,12 @@ package com.jaiser.qqrob.enums;
  */
 public enum GroupOperateEnum {
 
-    ALL_ENTRY(".词条", "输入 .词条 查询所有词条关键字", true),
-    ORDER_LIST(".指令","输入 .指令 查询所有指令",false),
-    STUDY_ENTRY(".学习","输入 .学习 key repeat,例如:学习 你好 你也好",true),
-    UPDATE_ENTRY(".更新","输入 .更新 key repeat,例如 更新 你好 收到",true),
-    ENCRYPT_JASYPT(".加密jasypt","输入 .加密jasypt 秘钥 明文",true),
-    DECRYPT_JASYPT(".解密jasypt","输入 .解密jasypt 秘钥 密文",true),
+    ALL_ENTRY("词条", "输入 词条 查询所有词条关键字", true),
+    ORDER_LIST("指令","输入 指令 查询所有指令",false),
+    STUDY_ENTRY("学习","输入 学习 key repeat,例如:学习 你好 你也好",true),
+    UPDATE_ENTRY("更新","输入 更新 key repeat,例如 更新 你好 收到",true),
+    ENCRYPT_JASYPT("加密jasypt","输入 加密jasypt 秘钥 明文",true),
+    DECRYPT_JASYPT("解密jasypt","输入 解密jasypt 秘钥 密文",true),
     ;
 
 

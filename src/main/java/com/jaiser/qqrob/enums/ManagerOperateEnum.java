@@ -12,6 +12,7 @@ public enum ManagerOperateEnum {
     OPERATE_FRIEND_STOP("3","关闭好友监听功能"),
     OPERATE_GROUP_START("4","开启群组监听功能"),
     OPERATE_GROUP_STOP("5","关闭群组监听功能"),
+    OPERATE_CLEAR_CACHE("99","清空所有缓存"),
     OPERATE_EXIT("0","退出操作")
     ;
 

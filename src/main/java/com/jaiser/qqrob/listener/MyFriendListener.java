@@ -2,6 +2,7 @@ package com.jaiser.qqrob.listener;
 
 import com.jaiser.qqrob.constant.RobConstant;
 import com.jaiser.qqrob.enums.ManagerOperateEnum;
+import com.jaiser.qqrob.listener.group.MyGroupUtil;
 import love.forte.di.annotation.Beans;
 import love.forte.simboot.annotation.ContentTrim;
 import love.forte.simboot.annotation.Filter;
@@ -38,6 +39,9 @@ public class MyFriendListener {
 
     @Autowired
     private RobConstant robConstant;
+
+    @Autowired
+    private MyGroupUtil myGroupUtil;
     /**
      * 监听好友消息，并且回复这个好友一句"是的"。
      *
@@ -144,6 +148,10 @@ public class MyFriendListener {
             case "5":
                 // 关闭监听群组功能
                 robConstant.setGroupEnable(false);
+                return true;
+            case "99":
+                // 清空所有缓存
+                myGroupUtil.clearAllCache();
                 return true;
 
             default:

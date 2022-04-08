@@ -139,4 +139,22 @@ public class AutoReplyD {
   public void setType(String type) {
     this.type = type;
   }
+
+  @Override
+  public String toString() {
+    return "AutoReplyD{" +
+            "replyId='" + replyId + '\'' +
+            ", replyName='" + replyName + '\'' +
+            ", chatKey='" + chatKey + '\'' +
+            ", chatValue='" + chatValue + '\'' +
+            ", insertUserName='" + insertUserName + '\'' +
+            ", insertUserId='" + insertUserId + '\'' +
+            ", insertTime='" + insertTime + '\'' +
+            ", updateUserName='" + updateUserName + '\'' +
+            ", updateUserId='" + updateUserId + '\'' +
+            ", updateTime='" + updateTime + '\'' +
+            ", id='" + id + '\'' +
+            ", type='" + type + '\'' +
+            '}';
+  }
 }

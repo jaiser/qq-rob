@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @SpringBootApplication
 @EnableSimbot
+@EnableCaching
 @MapperScan(basePackages = "com.jaiser.qqrob.mapper") //扫描所有的mapper接口并创建代理类
 public class QqRobApplication {
 
