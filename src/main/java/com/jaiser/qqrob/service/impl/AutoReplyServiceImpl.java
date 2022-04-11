@@ -34,7 +34,7 @@ public class AutoReplyServiceImpl implements AutoReplyService {
     private AutoReplyMapper autoReplyMapper;
 
     @Override
-    @Cacheable(cacheNames = "CACHE_SELECT_REPLY", key = "#chatKey")
+    @Cacheable(cacheNames = "CACHE_SELECT_REPLY")
     public AutoReplyD selectOneByKey(String chatKey) {
         if (StringUtils.checkValNull(chatKey)) {
             logger.error("回复key为空，无法查询回复信息,查询对象为：《chatKey:{}》", chatKey);

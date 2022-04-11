@@ -63,11 +63,11 @@ public class RedisConfiguration extends CachingConfigurerSupport {
 
         // 设置一个初始化的缓存名称set集合
         Set<String> cacheNames =  new HashSet<>();
-        cacheNames.add("user");
+        cacheNames.add("jaiser");
 
         // 对每个缓存名称应用不同的配置，自定义过期时间
         Map<String, RedisCacheConfiguration> configMap = new HashMap<>();
-        configMap.put("user", redisCacheConfiguration.entryTtl(Duration.ofSeconds(120)));
+        configMap.put("jaiser", redisCacheConfiguration.entryTtl(Duration.ofSeconds(120)));
 
         RedisCacheManager redisCacheManager = RedisCacheManager.builder(redisTemplate.getConnectionFactory())
                 .cacheDefaults(redisCacheConfiguration)
