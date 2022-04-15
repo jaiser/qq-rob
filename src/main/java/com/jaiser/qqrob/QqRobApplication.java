@@ -40,16 +40,6 @@ public class QqRobApplication {
         logger.info("=========================================");
         logger.info("=============启动成功，万事大吉=============");
         logger.info("=========================================");
-//        try {
-//            TimeUnit.SECONDS.sleep(15);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        String[] managerList = RobConstant.INSTANCE().getManager().split(",");
-//        for (String manager:
-//                managerList) {
-//            Bot.INSTANCE().getFriend(Identifies.ID(manager)).sendBlocking("机器人启动成功！");
-//        }
     }
 
 }
