@@ -206,8 +206,7 @@ public class MyGroupUtil {
         Messages messages = null;
 
         if (msgList.length < 3) {
-            messages = Messages.getMessages(Text.of("jasypt加密失败，样例输入：.加密jasypt key password！"));
-            event.sendBlocking(messages);
+            messages = Messages.getMessages(Text.of("jasypt加密失败，样例输入：加密jasypt key password！"));
         }else {
             textEncryptor = new BasicTextEncryptor();
             textEncryptor.setPassword(msgList[1]);
@@ -235,8 +234,7 @@ public class MyGroupUtil {
         Messages messages = null;
 
         if (msgList.length < 3) {
-            messages = Messages.getMessages(Text.of("jasypt解密失败，样例输入：.解密jasypt key password！"));
-            event.sendBlocking(messages);
+            messages = Messages.getMessages(Text.of("jasypt解密失败，样例输入：解密jasypt key password！"));
         }else {
             textEncryptor = new BasicTextEncryptor();
             textEncryptor.setPassword(msgList[1]);
@@ -248,7 +246,7 @@ public class MyGroupUtil {
             }
             messages = Messages.getMessages(Text.of(value));
         }
-        event.sendBlocking(messages);
+        event.replyBlocking(messages);
     }
 
     /**
