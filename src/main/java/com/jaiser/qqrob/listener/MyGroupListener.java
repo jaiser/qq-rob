@@ -66,6 +66,10 @@ public class MyGroupListener {
             myGroupUtil.decryptByJasypt(event);
         }else if (GroupOperateEnum.ENCRYPT_JASYPT.getValue().equals(msgList[0])) {
             myGroupUtil.encryptByJasypt(event);
+        }else if (GroupOperateEnum.DECRYPT_DES.getValue().equals(msgList[0])) {
+            myGroupUtil.decryptByDes(event);
+        }else if (GroupOperateEnum.ENCRYPT_DES.getValue().equals(msgList[0])) {
+            myGroupUtil.encryptByDes(event);
         } else {
             myGroupUtil.replyEntry(event);
         }

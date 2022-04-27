@@ -3,6 +3,7 @@ package com.jaiser.qqrob.listener.group;
 import com.jaiser.qqrob.constant.CommonConstant;
 import com.jaiser.qqrob.domain.AutoReplyD;
 import com.jaiser.qqrob.enums.GroupOperateEnum;
+import com.jaiser.qqrob.listener.group.encrypt.DESCoder;
 import com.jaiser.qqrob.service.AutoReplyService;
 import com.jaiser.qqrob.service.impl.AutoReplyServiceImpl;
 import love.forte.di.annotation.Beans;
@@ -248,6 +249,58 @@ public class MyGroupUtil {
         }
         event.replyBlocking(messages);
     }
+
+    /**
+     * 加密Des
+     *
+     * @param event
+     */
+    public void encryptByDes(MiraiGroupMessageEvent event) {
+        String msg = event.getMessageContent().getPlainText();
+        String[] msgList = msg.split("\\s+");
+
+        Messages messages = null;
+
+        if (msgList.length < 2) {
+            messages = Messages.getMessages(Text.of("des加密失败，样例输入：加密des value"));
+        }else {
+            String value = null;
+            try {
+                value = DESCoder.encrypt(msgList[1]);
+            } catch (Exception e) {
+                value = "加密失败，请联系管理员！";
+            }
+            messages = Messages.getMessages(Text.of(value));
+        }
+        event.replyBlocking(messages);
+    }
+
+    /**
+     * 解密Des
+     *
+     * @param event
+     */
+    public void decryptByDes(MiraiGroupMessageEvent event) {
+
+        String msg = event.getMessageContent().getPlainText();
+        String[] msgList = msg.split("\\s+");
+
+        Messages messages = null;
+
+        if (msgList.length < 2) {
+            messages = Messages.getMessages(Text.of("des解密失败，样例输入：解密des value"));
+        }else {
+            String value = null;
+            try {
+                value = DESCoder.decrypt(msgList[1]);
+            } catch (Exception e) {
+                value = "解密失败，请联系管理员！";
+            }
+            messages = Messages.getMessages(Text.of(value));
+        }
+        event.replyBlocking(messages);
+    }
+
 
     /**
      * 清空所有缓存， 所有缓存都在这里进行统一清空

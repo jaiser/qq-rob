@@ -11,6 +11,8 @@ public enum GroupOperateEnum {
     UPDATE_ENTRY("更新","输入 更新 key repeat,例如 更新 你好 收到",true),
     ENCRYPT_JASYPT("加密jasypt","输入 加密jasypt 秘钥 明文",true),
     DECRYPT_JASYPT("解密jasypt","输入 解密jasypt 秘钥 密文",true),
+    ENCRYPT_DES("加密des","输入 加密des 明文",true),
+    DECRYPT_DES("解密des","输入 解密des 密文",true),
     ;
 
 
