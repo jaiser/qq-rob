@@ -4,15 +4,18 @@ import com.jaiser.qqrob.constant.RobConstant;
 import com.jaiser.qqrob.enums.GroupOperateEnum;
 import com.jaiser.qqrob.listener.group.MyGroupUtil;
 import com.jaiser.qqrob.service.AutoReplyService;
+import com.jaiser.qqrob.utils.QueueList;
 import love.forte.di.annotation.Beans;
 import love.forte.di.annotation.Depend;
 import love.forte.simboot.annotation.Filter;
 import love.forte.simboot.annotation.Listener;
 import love.forte.simboot.filter.MatchType;
+import love.forte.simbot.Identifies;
 import love.forte.simbot.component.mirai.event.MiraiGroupMessageEvent;
 import love.forte.simbot.component.mirai.event.MiraiReceivedMessageContent;
 import love.forte.simbot.message.*;
 import net.mamoe.mirai.message.data.MessageChain;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,10 +74,31 @@ public class MyGroupListener {
         }else if (GroupOperateEnum.ENCRYPT_DES.getValue().equals(msgList[0])) {
             myGroupUtil.encryptByDes(event);
         } else {
-            myGroupUtil.replyEntry(event);
+            if (isRepeat(msg)) {
+                Messages message = Messages.getMessages(Text.of(msg));
+                event.sendBlocking(message);
+            }else {
+                myGroupUtil.replyEntry(event);
+            }
         }
     }
 
+    // 缓存聊天队列
+    QueueList<String> queueList = new QueueList(2);
+
+    private String lastestRepeat = null;
+
+    private Boolean isRepeat(String msg) {
+        if (StringUtils.isBlank(msg)) {
+            return false;
+        }
+        queueList.enQueue(msg);
+        if (queueList.isFull() && queueList.isCongruent() && !msg.equals(lastestRepeat)) {
+            lastestRepeat = msg;
+            return true;
+        }
+        return false;
+    }
 
 
 
