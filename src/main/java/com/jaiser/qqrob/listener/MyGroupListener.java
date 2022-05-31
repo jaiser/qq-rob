@@ -15,11 +15,15 @@ import love.forte.simbot.component.mirai.event.MiraiGroupMessageEvent;
 import love.forte.simbot.component.mirai.event.MiraiReceivedMessageContent;
 import love.forte.simbot.message.*;
 import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.OfflineAudio;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 群相关事件
@@ -47,6 +51,7 @@ public class MyGroupListener {
     public void myGroupListen(MiraiGroupMessageEvent event) {
         // 事件发生的群
         final String groupName = event.getGroup().getName();
+        final String groupId = String.valueOf(event.getGroup().getId());
         final String authorName = event.getAuthor().getUsername();
         final MiraiReceivedMessageContent messageContent = event.getMessageContent();
         // nativeMessageChain是mirai中的原生事件对象
@@ -74,7 +79,7 @@ public class MyGroupListener {
         }else if (GroupOperateEnum.ENCRYPT_DES.getValue().equals(msgList[0])) {
             myGroupUtil.encryptByDes(event);
         } else {
-            if (isRepeat(msg)) {
+            if (isRepeat(groupId, msg)) {
                 Messages message = Messages.getMessages(Text.of(msg));
                 event.sendBlocking(message);
             }else {
@@ -83,18 +88,28 @@ public class MyGroupListener {
         }
     }
 
-    // 缓存聊天队列
-    QueueList<String> queueList = new QueueList(2);
+    // 缓存聊天
+    Map<String, QueueList<String>> cacheMap = new HashMap<>();
 
-    private String lastestRepeat = null;
-
-    private Boolean isRepeat(String msg) {
-        if (StringUtils.isBlank(msg)) {
+    private Boolean isRepeat(String groupId, String msg) {
+        if (StringUtils.isBlank(groupId) || StringUtils.isBlank(msg)) {
             return false;
         }
+        // 缓存聊天队列
+        QueueList<String> queueList = null;
+        if (cacheMap == null) {
+            cacheMap = new HashMap<>();
+            return false;
+        }
+        if (cacheMap.get(groupId) == null) {
+             queueList = new QueueList(2);
+        }else {
+            queueList = cacheMap.get(groupId);
+        }
         queueList.enQueue(msg);
-        if (queueList.isFull() && queueList.isCongruent() && !msg.equals(lastestRepeat)) {
-            lastestRepeat = msg;
+        cacheMap.put(groupId, queueList);
+        if (queueList.isFull() && queueList.isCongruent() && !msg.equals(queueList.getLastestCongruent())) {
+            queueList.setLastestCongruent(msg);
             return true;
         }
         return false;

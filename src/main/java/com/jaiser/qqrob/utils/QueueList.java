@@ -15,6 +15,7 @@ public class QueueList<T> {
     private List<T> queueArray;
     private int front;   // 队头
     private int rear;	// 队尾
+    private T lastestCongruent; //最后一次全等
 
     public QueueList(int length) {
         maxSize = length;
@@ -123,4 +124,13 @@ public class QueueList<T> {
 //        }
 //
 //    }
+
+
+    public T getLastestCongruent() {
+        return lastestCongruent;
+    }
+
+    public void setLastestCongruent(T lastestCongruent) {
+        this.lastestCongruent = lastestCongruent;
+    }
 }
